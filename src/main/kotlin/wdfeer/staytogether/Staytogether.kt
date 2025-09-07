@@ -6,6 +6,7 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import kotlin.math.pow
 
 object Staytogether : ModInitializer {
     const val MOD_ID: String = "staytogether"
@@ -19,8 +20,7 @@ object Staytogether : ModInitializer {
         LOGGER.info("Stay Together loaded!")
     }
 
-    const val MAX_DISTANCE = 10f
-    const val ACCELERATION = 0.02
+    const val MAX_DISTANCE = 5f
 
     private fun tick(world: ServerWorld) {
         if (world.players.size < 2) return
@@ -32,8 +32,9 @@ object Staytogether : ModInitializer {
         }
 
         people.filter { it.pos.distanceTo(center) > MAX_DISTANCE }.forEach {
-            val dir = center.subtract(it.pos).normalize()
-            it.addVelocity(dir.multiply(ACCELERATION))
+            val delta = center.subtract(it.pos)
+            val acceleration = (delta.length() - MAX_DISTANCE).pow(2) * 0.01
+            it.addVelocity(delta.normalize().multiply(acceleration))
         }
     }
 }
