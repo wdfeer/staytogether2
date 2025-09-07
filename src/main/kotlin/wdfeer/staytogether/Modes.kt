@@ -17,7 +17,7 @@ private fun doOnAlivePlayers(
 private const val MAX_DISTANCE = 10.0
 val modes: Map<String, Ticker> = mapOf(
     "damage" to doOnAlivePlayers {
-        filter { p1 -> none { p2 -> p2.distanceTo(p1) < MAX_DISTANCE } }.forEach {
+        filter { p1 -> (this - p1).none { p2 -> p2.distanceTo(p1) < MAX_DISTANCE } }.forEach {
             it.damage(
                 it.world,
                 it.world.damageSources.magic(),
