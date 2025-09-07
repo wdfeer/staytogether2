@@ -31,11 +31,11 @@ object Staytogether : ModInitializer {
     private val commandRegistration = CommandRegistrationCallback { dispatcher, _, _ ->
         val addSubcommands: LiteralArgumentBuilder<ServerCommandSource>.() -> LiteralArgumentBuilder<ServerCommandSource> = {
             modes.forEach { entry ->
-                then(literal(entry.key)).executes {
+                then(literal(entry.key).executes {
                     mode = entry.key
                     it.source.sendFeedback({ Text.of("Stay Together mode set to $mode") }, true)
-                    0
-                }
+                    1
+                })
             }
             this
         }
