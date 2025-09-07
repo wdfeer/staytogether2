@@ -3,6 +3,7 @@ package wdfeer.staytogether
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.Vec3d
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -12,7 +13,9 @@ object Staytogether : ModInitializer {
     val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
 
     override fun onInitialize() {
+        // Once per dimension
         ServerTickEvents.END_WORLD_TICK.register(ServerTickEvents.EndWorldTick(::tick))
+
         LOGGER.info("Stay Together loaded!")
     }
 
@@ -22,14 +25,15 @@ object Staytogether : ModInitializer {
     private fun tick(world: ServerWorld) {
         if (world.players.size < 2) return
 
-        // TODO: implement center-of-mass attraction for 3+ players
-        val pair = world.players.take(2)
+        val people = world.players.filter { it.isAlive }
 
-        if (pair[0].distanceTo(pair[1]) > MAX_DISTANCE) {
-            val dir = pair[1].pos.subtract(pair[0].pos).normalize()
+        val center = people.map { it.pos }.run {
+            Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
+        }
 
-            pair[0].addVelocity(dir.multiply(ACCELERATION))
-            pair[1].addVelocity(dir.multiply(-ACCELERATION))
+        people.filter { it.pos.distanceTo(center) > MAX_DISTANCE }.forEach {
+            val dir = center.subtract(it.pos).normalize()
+            it.addVelocity(dir.multiply(ACCELERATION))
         }
     }
 }
