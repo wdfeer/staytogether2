@@ -2,7 +2,6 @@ package wdfeer.staytogether
 
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,10 +17,19 @@ object Staytogether : ModInitializer {
     }
 
     const val MAX_DISTANCE = 10f
+    const val ACCELERATION = 0.02
+
     private fun tick(world: ServerWorld) {
-        world.players.forEach { p1: ServerPlayerEntity ->
-            if ((world.players - p1).none { it!!.distanceTo(p1) < MAX_DISTANCE })
-                p1.damage(world, world.damageSources.magic(), 1f)
+        if (world.players.size < 2) return
+
+        // TODO: implement center-of-mass attraction for 3+ players
+        val pair = world.players.take(2)
+
+        if (pair[0].distanceTo(pair[1]) > MAX_DISTANCE) {
+            val dir = pair[1].pos.subtract(pair[0].pos).normalize()
+
+            pair[0].addVelocity(dir.multiply(ACCELERATION))
+            pair[1].addVelocity(dir.multiply(-ACCELERATION))
         }
     }
 }
