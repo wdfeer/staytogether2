@@ -10,7 +10,6 @@ import net.minecraft.server.world.ServerWorld
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
 object Staytogether : ModInitializer {
     const val MOD_ID: String = "staytogether"
 

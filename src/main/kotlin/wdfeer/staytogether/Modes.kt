@@ -1,25 +1,39 @@
 package wdfeer.staytogether
 
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 import kotlin.math.pow
 
-const val MAX_DISTANCE = 5f
+typealias Ticker = ServerWorld.() -> Unit
 
-// TODO: add more modes, e.g. damage
-val modes: Map<String, (ServerWorld) -> Unit> = mapOf(
-    "tether" to { world ->
-        val people = world.players.filter { it.isAlive }
-        if (people.size > 1) {
-            val center = people.map { it.pos }.run {
-                Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
-            }
+private fun doOnAlivePlayers(
+    action: List<ServerPlayerEntity>.() -> Unit
+): Ticker = {
+    val people = players.filter { it.isAlive }
+    if (people.size > 1) people.action()
+}
 
-            people.filter { it.pos.distanceTo(center) > MAX_DISTANCE }.forEach {
-                val delta = center.subtract(it.pos)
-                val acceleration = (delta.length() - MAX_DISTANCE).pow(2) * 0.01
-                it.addVelocity(delta.normalize().multiply(acceleration))
-            }
+private const val MAX_DISTANCE = 10f
+val modes: Map<String, Ticker> = mapOf(
+    "damage" to doOnAlivePlayers {
+        filter { p1 -> none { p2 -> p2.distanceTo(p1) < MAX_DISTANCE } }.forEach {
+            it.damage(
+                it.world,
+                it.world.damageSources.magic(),
+                1f
+            )
         }
-    }
+    },
+    "tether" to doOnAlivePlayers {
+        val center = map { it.pos }.run {
+            Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
+        }
+
+        filter { it.pos.distanceTo(center) > MAX_DISTANCE / 2 }.forEach {
+            val delta = center.subtract(it.pos)
+            val acceleration = (delta.length() - MAX_DISTANCE / 2).pow(2) * 0.01
+            it.addVelocity(delta.normalize().multiply(acceleration))
+        }
+    },
 )
