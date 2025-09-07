@@ -3,6 +3,7 @@ package wdfeer.staytogether
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
+import kotlin.math.min
 import kotlin.math.pow
 
 typealias Ticker = ServerWorld.() -> Unit
@@ -33,7 +34,7 @@ val modes: Map<String, Ticker> = mapOf(
 
         filter { it.pos.distanceTo(center) > MAX_DISTANCE / 2 }.forEach {
             val delta = center.subtract(it.pos)
-            val acceleration = (delta.length() - MAX_DISTANCE / 2).pow(2) * 0.01
+            val acceleration = min((delta.length() - MAX_DISTANCE / 2), 100.0).pow(2) * 0.01
             it.addVelocity(delta.normalize().multiply(acceleration))
             it.velocityModified = true
         }
@@ -46,7 +47,7 @@ val modes: Map<String, Ticker> = mapOf(
 
             filter { it.pos.distanceTo(center) > MAX_DISTANCE / 2 }.forEach {
                 val delta = center.subtract(it.pos)
-                val acceleration = (delta.length() - MAX_DISTANCE / 2).pow(1.5) * 0.1
+                val acceleration =  min((delta.length() - MAX_DISTANCE / 2), 100.0).pow(1.5) * 0.1
                 it.addVelocity(delta.normalize().multiply(acceleration))
                 it.velocityModified = true
             }
