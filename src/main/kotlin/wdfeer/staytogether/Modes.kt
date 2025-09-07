@@ -25,7 +25,7 @@ val modes: Map<String, Ticker> = mapOf(
             )
         }
     },
-    "tether" to doOnAlivePlayers {
+    "pull" to doOnAlivePlayers {
         val center = map { it.pos }.run {
             Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
         }
