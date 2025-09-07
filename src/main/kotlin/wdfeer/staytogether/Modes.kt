@@ -14,7 +14,7 @@ private fun doOnAlivePlayers(
     if (people.size > 1) people.action()
 }
 
-private const val MAX_DISTANCE = 10f
+private const val MAX_DISTANCE = 10.0
 val modes: Map<String, Ticker> = mapOf(
     "damage" to doOnAlivePlayers {
         filter { p1 -> none { p2 -> p2.distanceTo(p1) < MAX_DISTANCE } }.forEach {
@@ -36,4 +36,14 @@ val modes: Map<String, Ticker> = mapOf(
             it.addVelocity(delta.normalize().multiply(acceleration))
         }
     },
+    "teleport" to doOnAlivePlayers {
+        val center = map { it.pos }.run {
+            Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
+        }
+
+        filter { it.pos.distanceTo(center) > MAX_DISTANCE / 2 }.forEach {
+            val pos = center.add(it.pos.subtract(center).normalize().multiply(MAX_DISTANCE / 2))
+            it.setPosition(pos)
+        }
+    }
 )
