@@ -38,6 +38,20 @@ val modes: Map<String, Ticker> = mapOf(
             it.velocityModified = true
         }
     },
+    "jerk" to doOnAlivePlayers {
+        if (this[0].world.time % 20 == 0L) {
+            val center = map { it.pos }.run {
+                Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
+            }
+
+            filter { it.pos.distanceTo(center) > MAX_DISTANCE / 2 }.forEach {
+                val delta = center.subtract(it.pos)
+                val acceleration = (delta.length() - MAX_DISTANCE / 2).pow(1.5) * 0.1
+                it.addVelocity(delta.normalize().multiply(acceleration))
+                it.velocityModified = true
+            }
+        }
+    },
     "teleport" to doOnAlivePlayers {
         val center = map { it.pos }.run {
             Vec3d(sumOf { it.x }, sumOf { it.y }, sumOf { it.z }).multiply(1.0 / size)
