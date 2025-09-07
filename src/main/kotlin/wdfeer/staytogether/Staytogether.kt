@@ -6,8 +6,6 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.function.Consumer
-
 
 object Staytogether : ModInitializer {
     const val MOD_ID: String = "staytogether"
@@ -15,18 +13,17 @@ object Staytogether : ModInitializer {
     val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
 
     override fun onInitialize() {
-        val maxDistance = 10f
-        ServerTickEvents.END_WORLD_TICK.register(ServerTickEvents.EndWorldTick { world: ServerWorld? ->
-            world!!.getPlayers().forEach(
-                Consumer { p1: ServerPlayerEntity? ->
-                    if (world.getPlayers().stream().filter { p2: ServerPlayerEntity? -> p1 !== p2 }
-                            .noneMatch { p2: ServerPlayerEntity? -> p1!!.distanceTo(p2) < maxDistance }) {
-                        p1!!.damage(world, world.damageSources.magic(), 1f)
-                    }
-                })
-        })
-
+        ServerTickEvents.END_WORLD_TICK.register(ServerTickEvents.EndWorldTick(::tick))
         LOGGER.info("Stay Together loaded!")
+    }
 
+    const val MAX_DISTANCE = 10f
+    private fun tick(world: ServerWorld) {
+        world.players.forEach { p1: ServerPlayerEntity? ->
+            if (world.getPlayers().stream().filter { p2: ServerPlayerEntity? -> p1 !== p2 }
+                    .noneMatch { p2: ServerPlayerEntity? -> p1!!.distanceTo(p2) < MAX_DISTANCE }) {
+                p1!!.damage(world, world.damageSources.magic(), 1f)
+            }
+        }
     }
 }
