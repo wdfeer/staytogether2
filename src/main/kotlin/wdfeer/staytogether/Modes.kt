@@ -6,6 +6,7 @@ import kotlin.math.pow
 
 const val MAX_DISTANCE = 5f
 
+// TODO: add more modes, e.g. damage
 val modes: Map<String, (ServerWorld) -> Unit> = mapOf(
     "tether" to { world ->
         val people = world.players.filter { it.isAlive }
