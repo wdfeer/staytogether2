@@ -34,6 +34,7 @@ val modes: Map<String, Ticker> = mapOf(
             val delta = center.subtract(it.pos)
             val acceleration = (delta.length() - MAX_DISTANCE / 2).pow(2) * 0.01
             it.addVelocity(delta.normalize().multiply(acceleration))
+            it.velocityModified = true
         }
     },
     "teleport" to doOnAlivePlayers {
@@ -43,7 +44,7 @@ val modes: Map<String, Ticker> = mapOf(
 
         filter { it.pos.distanceTo(center) > MAX_DISTANCE / 2 }.forEach {
             val pos = center.add(it.pos.subtract(center).normalize().multiply(MAX_DISTANCE / 2))
-            it.setPosition(pos)
+            pos.run { it.teleport(x, y, z, false) }
         }
     }
 )
