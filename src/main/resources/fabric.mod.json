@@ -3,15 +3,14 @@
 	"id": "staytogether",
 	"version": "${version}",
 	"name": "staytogether",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Yanks players towards the center of mass of all players!",
 	"authors": [
-		"Me!"
+		"wdfeer"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/wdfeer/staytogether"
 	},
-	"license": "CC0-1.0",
+	"license": "GPL-3.0",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
