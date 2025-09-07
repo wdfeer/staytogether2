@@ -19,11 +19,9 @@ object Staytogether : ModInitializer {
 
     const val MAX_DISTANCE = 10f
     private fun tick(world: ServerWorld) {
-        world.players.forEach { p1: ServerPlayerEntity? ->
-            if (world.getPlayers().stream().filter { p2: ServerPlayerEntity? -> p1 !== p2 }
-                    .noneMatch { p2: ServerPlayerEntity? -> p1!!.distanceTo(p2) < MAX_DISTANCE }) {
-                p1!!.damage(world, world.damageSources.magic(), 1f)
-            }
+        world.players.forEach { p1: ServerPlayerEntity ->
+            if ((world.players - p1).none { it!!.distanceTo(p1) < MAX_DISTANCE })
+                p1.damage(world, world.damageSources.magic(), 1f)
         }
     }
 }
