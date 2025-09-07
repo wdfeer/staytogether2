@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.text.Text
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -32,7 +33,8 @@ object Staytogether : ModInitializer {
             modes.forEach { entry ->
                 then(literal(entry.key)).executes {
                     mode = entry.key
-                    1
+                    it.source.sendFeedback({ Text.of("Stay Together mode set to $mode") }, true)
+                    0
                 }
             }
             this
